@@ -7,17 +7,17 @@ Implemented as a collection of completely customizable and extendable Terraform 
 ![architecture overview](architecture.svg)
 
 ## Features
-    - completely serverless
-    - completely automated/managed
-    - easily scalable
-    - easily and completely extendable/customizable
-    - easy setup of 1 or many DynamoDB tables
-    - near-realtime, data is continously ingested into data lake
-    - immediately ready to be queried by AWS Athena or AWS Redshift Spectrum
-    - no change in application code that generates the data / writes it to DynamoDB necessary
-    - no additional load on DynamoDB table
-    - automatic data partitioning based on date
-    - basic monitoring with AWS CloudWatch
+- completely serverless
+- completely automated/managed
+- easily scalable
+- easily and completely extendable/customizable
+- easy setup of 1 or many DynamoDB tables
+- near-realtime, data is continously ingested into data lake
+- immediately ready to be queried by AWS Athena or AWS Redshift Spectrum
+- no change in application code that generates the data / writes it to DynamoDB necessary
+- no additional load on DynamoDB table
+- automatic data partitioning based on date
+- basic monitoring with AWS CloudWatch
 
 ## Getting started
 
@@ -55,7 +55,7 @@ This allows for Athena queries like `select * from receipts where dt >= '2019052
 Firehose by default saves the data in a nested directory structure (YYYY/MM/DD/HH) which doesn't allow for easy partitioning by AWS Glue/Athena. This is why there is an intermediate S3 location and a second Lambda function.
 
 ## Data Retention and Throughput Limits
-AWS Kinesis has a throughput limit of how much data it can ingest at the same time. If the Lambda function sends too much data, Kinesis will respond with a `WriteProvisionedThroughputExceeded` exception. In that case the batch of data will be retried. However only up to 24 hours, which is the retention of DynamoDB streams. To avoid this situation you can increase the Kinesis shard count, which will allow you to ingest more data at the same time.
+AWS Kinesis has a throughput limit of how much data it can ingest at the same time. If there is too much table activity on the DynamoDB table, the Lambda function will send too much data to Kinesis. Kinesis will respond with a `WriteProvisionedThroughputExceeded` exception. In that case the batch of data will be retried. However only up to 24 hours, which is the retention of DynamoDB streams. To avoid this situation you can increase the Kinesis shard count, which will allow you to ingest more data at the same time.
 
 ## Modifying this system
 Pretty much everything here can be easily adjusted and modified to your liking.  
@@ -68,7 +68,6 @@ Don't need data partitioning? Cut the intermediate S3 bucket and the second Lamb
 At the time of writing this (08/2019), the only way to increase/decrease the throughput limit of AWS Firehose is to ask via support ticket, which is not very practical. If this is not an issue for you, you can write from the Lambda function directly to the Firehose stream.
 
 ## Food for thought
-Here are a few other things you might want to think about.
 ### How do I get the data that was already in the DynamoDB table into the data lake?
 The earliest DynamoDB data you will have in the data lake will be from the point on where you created this pipeline.  
 To get all previous data from the DynamoDB table, you will have to run some sort of import job. We use AWS Glue Jobs for that.
@@ -78,7 +77,7 @@ We always save timestamp metadata(createdAt/updatedAt) on each item in DynamoDB.
 applymapping2 = Filter.apply(frame = applymapping1, f = lambda x: x.updatedat < 1562148836036 , transformation_ctx = "applymapping2")
 ```
 
-This line tells the Glue Job to filter data based on updatedat. We then write this data from the initial import in a `dt=00000000` directory. Now we have the complete DynamoDB data of the table.
+This line tells the Glue Job to filter data based on updatedat timestamp. We then write this data from the initial import in a `dt=00000000` directory. Now we have the complete DynamoDB data of the table.
 
 ### Converting the data into another data format
 The data in S3 will be in gzipped JSON format. However there are other data formats like Apache Parquet or ORC that are more efficient to query.  
