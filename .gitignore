@@ -1,0 +1,4 @@
+terraform.tfstate*
+.terraform/
+main_binary
+example2/
