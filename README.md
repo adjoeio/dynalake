@@ -1,4 +1,4 @@
-# dyna2lake
+# dynalake
 
 Out-of-the-box system for data ingestion from AWS DynamoDB
 to a S3-based data lake as well as near-realtime analysis.
