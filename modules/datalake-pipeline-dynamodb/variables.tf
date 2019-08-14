@@ -59,17 +59,12 @@ variable "kinesis_shard_count" {
 }
 
 variable "kinesis_retention_period" {
-  default     = 168
+  default     = 24
   description = "Kinesis retention period in hours"
 }
 
 variable "bucket_data" {
   type        = string
   description = "S3 bucket where to the data will end up"
-}
-
-variable "bucket_firehose_output" {
-  type        = string
-  description = "Intermediate S3 bucket to use for the Kinesis Firehose output"
 }
 

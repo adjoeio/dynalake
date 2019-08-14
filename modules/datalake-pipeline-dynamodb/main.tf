@@ -74,12 +74,13 @@ resource "aws_kinesis_firehose_delivery_stream" "ddbstreams_to_s3_json" {
   }
 
   extended_s3_configuration {
-    role_arn           = var.firehose_role_arn
-    bucket_arn         = "arn:aws:s3:::${var.bucket_firehose_output}"
-    buffer_size        = var.firehose_buffer_size
-    buffer_interval    = var.firehose_buffer_interval
-    prefix             = "data/dynamodb/${var.dynamodb_table_name}/"
-    compression_format = "GZIP"
+    role_arn            = var.firehose_role_arn
+    bucket_arn          = "arn:aws:s3:::${var.bucket_data}"
+    buffer_size         = var.firehose_buffer_size
+    buffer_interval     = var.firehose_buffer_interval
+    prefix              = "dynamodb/json/${var.dynamodb_table_name}/dt=!{timestamp:yyyyMMdd}/"
+    error_output_prefix = "dynamodb-errors/!{firehose:error-output-type}/${var.dynamodb_table_name}/dt=!{timestamp:yyyyMMdd}/"
+    compression_format  = "GZIP"
   }
 }
 

@@ -20,7 +20,6 @@ module "datalake-pipeline-dynamodb-table-ENTER_DYNAMODB_TABLE_NAME_HERE" {
   region                            = "ENTER_AWS_REGION_HERE"
   environment                       = "ENTER_ENVIRONMENT_HERE"
   ddb_streams_to_kinesis_lambda_arn = module.datalake-pipeline-dynamodb-foundation.ddbstreams_to_kinesis_lambda_arn
-  bucket_firehose_output            = module.datalake-pipeline-foundation.firehouse_output_bucket_name
   bucket_data                       = module.datalake-pipeline-foundation.data_bucket_name
   glue_database_name                = module.datalake-pipeline-foundation.glue_database_name
   firehose_role_arn                 = module.datalake-pipeline-foundation.firehose_iam_role_arn

@@ -52,7 +52,7 @@ dynamodb
 ```
 
 This allows for Athena queries like `select * from receipts where dt >= '20190523'`. This makes queries that are based on dates more efficient.  
-Firehose by default saves the data in a nested directory structure (YYYY/MM/DD/HH) which doesn't allow for easy partitioning by AWS Glue/Athena. This is why there is an intermediate S3 location and a second Lambda function.
+Firehose by default saves the data in a nested directory structure (YYYY/MM/DD/HH) which doesn't allow for easy partitioning by AWS Glue/Athena.
 
 ## Data Retention and Throughput Limits
 AWS Kinesis has a throughput limit of how much data it can ingest at the same time. If there is too much table activity on the DynamoDB table, the Lambda function will send too much data to Kinesis. Kinesis will respond with a `WriteProvisionedThroughputExceeded` exception. In that case the batch of data will be retried. However only up to 24 hours, which is the retention of DynamoDB streams. To avoid this situation you can increase the Kinesis shard count, which will allow you to ingest more data at the same time.
@@ -62,7 +62,7 @@ Pretty much everything here can be easily adjusted and modified to your liking.
 Don't like the S3 bucket naming or directory structure? Change it.  
 Want to write the Lambda functions in another language? No problem.  
 Don't need CloudWatch alarms? Remove them.  
-Don't need data partitioning? Cut the intermediate S3 bucket and the second Lambda function.
+Need different data partitioning? Have a look at AWS Firehose [custom prefixes](https://docs.aws.amazon.com/firehose/latest/dev/s3-prefixes.html)
 
 ### Why not ingest directly from Lambda to Firehose?
 At the time of writing this (08/2019), the only way to increase/decrease the throughput limit of AWS Firehose is to ask via support ticket, which is not very practical. If this is not an issue for you, you can write from the Lambda function directly to the Firehose stream.
